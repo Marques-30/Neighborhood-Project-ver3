@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>San Diego</title>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    <div class="options-box">
+        <h1>Explore the Area of San Diego</h1>
+        <hr>
+        <div class="search" id="search">
+            <input class="search-box" id="search-box" data-bind="textInput: searchTerm, valueUpdate: 'afterkeydown'" type="text" placeholder="Type to quick find locations" />
+        </div>
+        <div class="app" id="app">
+            <div class="list" id="list">
+                <ul class="results" id="results" data-bind="foreach: filteredList" type="button">
+                    <li class="place" id="place" data-bind="text: Title, click: bounce"></li>
+                </ul>
+            </div>
+            <div>
+                <h2>Wikipedia Links</h2>
+                <hr>
+                <p id="data"></p>
+            </div>
+        </div>
+    </div>
+    <div id="map"></div>
+    </div>
+    <script src="libs/jquery.min.js"></script>
+    <script src="libs/knockout-3.4.0.js"></script>
+    <script src="script.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyCwjWvK__Yb7ZkqTBmGR0tPXTPsomLBYQo&v=3&callback=initMap" onerror="errorMessage()"></script>
+</body>
+
+</html>
