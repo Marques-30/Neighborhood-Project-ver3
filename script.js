@@ -187,7 +187,6 @@ function initMap() {
 }
 
 function populateInfoWindow(marker) {
-    console.log(marker)
     // Check to make sure the infowindow is not already opened on this marker.
     if (largeInfowindow.marker != marker) {
         // Clear the infowindow content to give the streetview time to load.
@@ -288,7 +287,7 @@ var Location = function(data) {
         '<div class="content">' + self.city + "</div>"; //+        '<div class="content">' + 'populateInfoWindow()' + "</div>";
 
         // Pass the marker as an argument to the populateInfoWindow function
-        populateInfoWindow(this)
+        populateInfoWindow(this);
 
         //self.infoWindow.setContent(self.contentString);
 
