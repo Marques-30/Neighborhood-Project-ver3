@@ -18,7 +18,9 @@
         <div class="app" id="app">
             <div class="list" id="list">
                 <ul class="results" id="results" data-bind="foreach: filteredList" type="button">
-                    <li class="place" id="place" data-bind="text: Title, click: bounce"></li>
+                    <li class="place" id="place">
+                        <button class="place" id="place" data-bind="text: Title, click: bounce"></button>
+                    </li>
                 </ul>
             </div>
             <div>

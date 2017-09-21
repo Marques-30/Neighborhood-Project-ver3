@@ -59,12 +59,15 @@ hr {
   height: 200px;
 }
 
-#zoo, #park, #house,
-#beach, #sea, #golf, #place {
+#place {
   height: 25px;
   max-width: 100%;
   border-radius: 25px;
   text-align: center;
+  padding: 5px;
+  list-style-type: none;
+  margin-right: 50px;
+  box-shadow: 2px 3px;
 }
 
 #places-search,

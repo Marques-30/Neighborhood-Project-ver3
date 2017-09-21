@@ -1,8 +1,7 @@
-var map;
-
-var markers = [];
-
-var placeMarkers = [];
+var map,
+    markers = [],
+    largeInfowindow,
+    placeMarkers = [];
 
 var local = [
     {
@@ -138,7 +137,7 @@ function initMap() {
     // These are the real estate listings that will be shown to the user.
     // Normally we'd have these in a database instead.
 
-    var largeInfowindow = new google.maps.InfoWindow();
+    largeInfowindow = new google.maps.InfoWindow();
 
     // Style the markers a bit. This will be our listing marker icon.
     var defaultIcon = makeMarkerIcon('0091ff');
@@ -186,15 +185,16 @@ function initMap() {
     
     
 }
-/*
-function populateInfoWindow(marker, infowindow) {
+
+function populateInfoWindow(marker) {
+    console.log(marker)
     // Check to make sure the infowindow is not already opened on this marker.
-    if (infowindow.marker != marker) {
+    if (largeInfowindow.marker != marker) {
         // Clear the infowindow content to give the streetview time to load.
-        infowindow.setContent('');
-        infowindow.marker = marker;
+        largeInfowindow.setContent('');
+        largeInfowindow.marker = marker;
         // Make sure the marker property is cleared if the infowindow is closed.
-        infowindow.addListener('closeclick', function () {
+        largeInfowindow.addListener('closeclick', function () {
             infowindow.marker = null;
         });
         var streetViewService = new google.maps.StreetViewService();
@@ -208,7 +208,9 @@ function populateInfoWindow(marker, infowindow) {
                 var nearStreetViewLocation = data.location.latLng;
                 var heading = google.maps.geometry.spherical.computeHeading(
                     nearStreetViewLocation, marker.position);
-                infowindow.setContent('<div>' + marker.title + '</div><div id="pano"></div>');
+
+                largeInfowindow.setContent(marker.contentString + '<div>' + marker.title + '</div><div id="pano"></div>');
+                
                 var panoramaOptions = {
                     position: nearStreetViewLocation,
                     pov: {
@@ -219,7 +221,7 @@ function populateInfoWindow(marker, infowindow) {
                 var panorama = new google.maps.StreetViewPanorama(
                     document.getElementById('pano'), panoramaOptions);
             } else {
-                infowindow.setContent('<div>' + marker.title + '</div>' +
+                largeInfowindow.setContent('<div>' + marker.title + '</div>' +
                     '<div>No Street View Found</div>');
             }
         };
@@ -227,10 +229,10 @@ function populateInfoWindow(marker, infowindow) {
         // 50 meters of the markers position
         streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
         // Open the infowindow on the correct marker.
-        infowindow.open(map, marker);
+        largeInfowindow.open(map, marker);
     }
 }
-*/
+
 function makeMarkerIcon(markerColor) {
     var markerImage = new google.maps.MarkerImage(
         'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|' + markerColor +
@@ -252,6 +254,8 @@ var Location = function(data) {
     this.URL = "";
 
     this.visible = ko.observable(true);
+
+    // attach content string to the marker object
     this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
         '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
@@ -276,14 +280,19 @@ var Location = function(data) {
     }, this);
 
     this.marker.addListener('click', function(){
-        self.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
+
+        // Attach content string to the marker object
+        this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
         '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
-        '<div class="content">' + self.city + "</div>" +        '<div class="content">' + 'populateInfoWindow()' + "</div>";
+        '<div class="content">' + self.city + "</div>"; //+        '<div class="content">' + 'populateInfoWindow()' + "</div>";
 
-        self.infoWindow.setContent(self.contentString);
+        // Pass the marker as an argument to the populateInfoWindow function
+        populateInfoWindow(this)
 
-        self.infoWindow.open(map, this);
+        //self.infoWindow.setContent(self.contentString);
+
+       // self.infoWindow.open(map, this);
 
         self.marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function() {
