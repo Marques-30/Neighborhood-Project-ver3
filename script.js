@@ -10,9 +10,9 @@ var local = [
         lng: -117.172326
     },
     {
-        Title: 'Golf Course',
-        lat: 32.763948,
-        lng: -117.176492
+        Title: 'Aero Club Bar',
+        lat: 32.738019,
+        lng: -117.176591
     },
     {
         Title: 'Sea World',
@@ -31,8 +31,8 @@ var local = [
     },
     {
         Title: 'Airport',
-        lat: 32.735970,
-        lng: -117.192869
+        lat: 32.731653,
+        lng: -117.196596
     }
 ];
 
@@ -181,9 +181,11 @@ function initMap() {
         marker.addListener('mouseout', end);
     }
     ko.applyBindings(new ViewModel());
-    window.onload=function(){wikiload();};
-    
-    
+    window.onload = function () {
+        wikiload();
+    };
+
+
 }
 
 function populateInfoWindow(marker) {
@@ -209,7 +211,7 @@ function populateInfoWindow(marker) {
                     nearStreetViewLocation, marker.position);
 
                 largeInfowindow.setContent(marker.contentString + '<div>' + marker.title + '</div><div id="pano"></div>');
-                
+
                 var panoramaOptions = {
                     position: nearStreetViewLocation,
                     pov: {
@@ -243,34 +245,36 @@ function makeMarkerIcon(markerColor) {
     return markerImage;
 }
 
-var Location = function(data) {
+var Location = function (data) {
     var self = this;
     this.Title = data.Title;
     this.lat = data.lat;
     this.lng = data.lng;
-    this.street = "";
-    this.city = "";
+    this.street = Square(this);
+    this.city = "San Diego, CA";
     this.URL = "";
 
     this.visible = ko.observable(true);
 
     // attach content string to the marker object
     this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
-        '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
+        '<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
         '<div class="content">' + self.street + "</div>" +
         '<div class="content">' + self.city + "</div>" +
         '<div class="content">' + 'populateInfoWindow()' + "</div>";
 
-    this.infoWindow = new google.maps.InfoWindow({content: self.contentString});
-
-    this.marker = new google.maps.Marker({
-            position: new google.maps.LatLng(data.lat, data.lng),
-            map: map,
-            title: data.Title
+    this.infoWindow = new google.maps.InfoWindow({
+        content: self.contentString
     });
 
-    this.showMarker = ko.computed(function() {
-        if(this.visible() === true) {
+    this.marker = new google.maps.Marker({
+        position: new google.maps.LatLng(data.lat, data.lng),
+        map: map,
+        title: data.Title
+    });
+
+    this.showMarker = ko.computed(function () {
+        if (this.visible() === true) {
             this.marker.setMap(map);
         } else {
             this.marker.setMap(null);
@@ -278,28 +282,28 @@ var Location = function(data) {
         return true;
     }, this);
 
-    this.marker.addListener('click', function(){
+    this.marker.addListener('click', function () {
 
         // Attach content string to the marker object
         this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
-        '<div class="content"><a href="' + self.URL +'">' + self.URL + "</a></div>" +
-        '<div class="content">' + self.street + "</div>" +
-        '<div class="content">' + self.city + "</div>"; //+        '<div class="content">' + 'populateInfoWindow()' + "</div>";
+            '<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
+            '<div class="content">' + self.street + "</div>" +
+            '<div class="content">' + self.city + "</div>"; //+        '<div class="content">' + 'populateInfoWindow()' + "</div>";
 
         // Pass the marker as an argument to the populateInfoWindow function
         populateInfoWindow(this);
 
         //self.infoWindow.setContent(self.contentString);
 
-       // self.infoWindow.open(map, this);
+        //self.infoWindow.open(map, this);
 
         self.marker.setAnimation(google.maps.Animation.BOUNCE);
-        setTimeout(function() {
+        setTimeout(function () {
             self.marker.setAnimation(null);
         }, 2100);
     });
 
-    this.bounce = function(place) {
+    this.bounce = function (place) {
         google.maps.event.trigger(self.marker, 'click');
     };
 };
@@ -312,23 +316,26 @@ function ViewModel() {
     this.locationList = ko.observableArray([]);
 
     map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 13,
-            center: {lat: 32.742237, lng: -117.185009}
+        zoom: 13,
+        center: {
+            lat: 32.742237,
+            lng: -117.185009
+        }
     });
 
-    local.forEach(function(locationItem){
-        self.locationList.push( new Location(locationItem));
+    local.forEach(function (locationItem) {
+        self.locationList.push(new Location(locationItem));
     });
 
-    this.filteredList = ko.computed( function() {
+    this.filteredList = ko.computed(function () {
         var filter = self.searchTerm().toLowerCase();
         if (!filter) {
-            self.locationList().forEach(function(locationItem){
+            self.locationList().forEach(function (locationItem) {
                 locationItem.visible(true);
             });
             return self.locationList();
         } else {
-            return ko.utils.arrayFilter(self.locationList(), function(locationItem) {
+            return ko.utils.arrayFilter(self.locationList(), function (locationItem) {
                 var string = locationItem.Title.toLowerCase();
                 var result = (string.search(filter) >= 0);
                 locationItem.visible(result);
@@ -378,4 +385,73 @@ function wikiload() {
     return false;
 }
 
-$('#data').submit(wikiload);
+function Square(data) {
+ 
+    records = JSON.parse(localStorage.getItem('records'));
+    if (records === null) {
+        records = {
+            food: true,
+            shops: false,
+            outdoors: false
+        };
+        localStorage.setItem('records', JSON.stringify(records));
+    }
+
+    var category = [];
+    var clientID = "5T4XZTVTZ0UTLL13L4PQPFM2XRZDXTKEYMH2D5UYGQIAT2XN";
+    var clientSecret = "NN4WP53J13K4TYJD4RY1HXU10HI14LHCYQMDOL30EVXRFVF5";
+    var SquareUrl = "https://api.foursquare.com/v2/venues/search?ll=" + this.lat + "," + this.lng + "&client_id=" + clientID + "&client_secret=" + clientSecret + "&v=20170928" + "&query=" + this.Title;
+    if (records.food) category.push('food');
+    if (records.shops) category.push('shops');
+    if (records.outdoors) category.push('outdoors');
+
+    $.getJSON(SquareUrl).then(function (result, status) {
+        var items = result.data.response.groups[0].items;
+
+        var help = [];
+        //filter if statement
+        for (var el in items) {
+            var place = parseVenue(items[el]);
+            help.push(place);
+        }
+
+        state = 'loaded';
+        venues = help;
+    }, function (data, status) {
+        state = 'noResult';
+    });
+    return false;
+}
+/*function(yelpload){
+const yelp = require('yelp-fusion');
+
+// Place holders for Yelp Fusion's OAuth 2.0 credentials. Grab them
+// from https://www.yelp.com/developers/v3/manage_app
+const clientId = '38zxH5g3Qe15UOIyvOm-VQ';
+const clientSecret = '2TnMQ1SyQqXZ7vRiPxjHcSemyZ0CliUfM2hjSeH73yE0A6iEQhbXp2sMfRAuCVj3';
+
+const searchRequest = local;
+
+yelp.accessToken(clientId, clientSecret).then(response => {
+  const client = yelp.client(response.jsonBody.access_token);
+
+  client.search(searchRequest).then(response => {
+    const firstResult = response.jsonBody.businesses[0];
+    const prettyJson = JSON.stringify(firstResult, null, 4);
+    console.log(prettyJson);
+  });
+}).catch(e => {
+  console.log(e);
+});
+
+$.ajax({
+      dataType: "POST",
+      url: "https://api.yelp.com/oauth2/token",
+      grant_type: "client_credentials",
+      client_id: clientId,
+      client_secret: clientSecret,
+      success: function(data,textStatus,jqXHR) {
+        console.log(data,textStatus,jqXHR);
+      }
+    });
+}*/

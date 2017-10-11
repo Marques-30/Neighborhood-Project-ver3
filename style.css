@@ -36,6 +36,7 @@ hr {
   bottom:0px;
   height: 100%;
   left: 362px;
+  width: 100%;
   position: absolute;
   right: 0px;
 }
@@ -51,7 +52,8 @@ hr {
   height: 100%;
   padding: 10px 10px 30px 10px;
   text-align: left;
-  width: 340px;
+  max-width: 340px;
+  width: 25%;
 }
 
 #pano {
@@ -68,11 +70,6 @@ hr {
   list-style-type: none;
   margin-right: 50px;
   box-shadow: 2px 3px;
-}
-
-#places-search,
-#search-within-time-text {
-  width: 84%;
 }
 
 .text {
