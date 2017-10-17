@@ -7,32 +7,38 @@ var local = [
     {
         Title: 'Country Maps',
         lat: 32.722529,
-        lng: -117.172326
+        lng: -117.172326,
+        id: '40e0b100f964a5209c011fe3'
     },
     {
         Title: 'Aero Club Bar',
         lat: 32.738019,
-        lng: -117.176591
+        lng: -117.176591,
+        id: '40e0b100f964a5209c011fe3'
     },
     {
         Title: 'Sea World',
         lat: 32.764720,
-        lng: -117.225249
+        lng: -117.225249,
+        id: '40e0b100f964a5209c011fe3'
     },
     {
         Title: 'Ocean Beach',
         lat: 32.754438,
-        lng: -117.252425
+        lng: -117.252425,
+        id: '40e0b100f964a5209c011fe3'
     },
     {
         Title: 'Zoo',
         lat: 32.733153,
-        lng: -117.149112
+        lng: -117.149112,
+        id: '40e0b100f964a5209c011fe3'
     },
     {
         Title: 'Airport',
         lat: 32.731653,
-        lng: -117.196596
+        lng: -117.196596,
+        id: '40e0b100f964a5209c011fe3'
     }
 ];
 
@@ -250,6 +256,7 @@ var Location = function (data) {
     this.Title = data.Title;
     this.lat = data.lat;
     this.lng = data.lng;
+    this.id = data.id;
     this.street = Square(this);
     this.city = "San Diego, CA";
     this.URL = "";
@@ -289,7 +296,7 @@ var Location = function (data) {
             '<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
             '<div class="content">' + self.street + "</div>" +
             '<div class="content">' + self.city + "</div>"; //+        '<div class="content">' + 'populateInfoWindow()' + "</div>";
-
+            console.log(this.contentString)
         // Pass the marker as an argument to the populateInfoWindow function
         populateInfoWindow(this);
 
@@ -400,13 +407,15 @@ function Square(data) {
     var category = [];
     var clientID = "5T4XZTVTZ0UTLL13L4PQPFM2XRZDXTKEYMH2D5UYGQIAT2XN";
     var clientSecret = "NN4WP53J13K4TYJD4RY1HXU10HI14LHCYQMDOL30EVXRFVF5";
-    var SquareUrl = "https://api.foursquare.com/v2/venues/search?ll=" + this.lat + "," + this.lng + "&client_id=" + clientID + "&client_secret=" + clientSecret + "&v=20170928" + "&query=" + this.Title;
+    //var SquareUrl = "https://api.foursquare.com/v2/venues/40e0b100f964a5209c011fe3&client_id=" + clientID + "&client_secret=" + clientSecret + "&v=20170928";
+    var SquareUrl = "https://api.foursquare.com/v2/venues/search?ll=" + data.lat + "," + data.lng + "&client_id=" + clientID + "&client_secret=" + clientSecret + "&v=20170928" + "&query=" + data.Title;
     if (records.food) category.push('food');
     if (records.shops) category.push('shops');
     if (records.outdoors) category.push('outdoors');
 
-    $.getJSON(SquareUrl).then(function (result, status) {
-        var items = result.data.response.groups[0].items;
+    $.getJSON(SquareUrl, function (result) {
+        console.log(result.response.venues[0].location.address)
+        return result.response.venues[0].location.address;
 
         var help = [];
         //filter if statement
