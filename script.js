@@ -5,9 +5,9 @@ var map,
 
 var local = [
     {
-        Title: 'Country Maps',
-        lat: 32.722529,
-        lng: -117.172326,
+        Title: 'Waterfront Park',
+        lat: 32.7219903,
+        lng: -117.1726884,
         id: '40e0b100f964a5209c011fe3'
     },
     {
@@ -17,27 +17,27 @@ var local = [
         id: '40e0b100f964a5209c011fe3'
     },
     {
-        Title: 'Sea World',
+        Title: 'SeaWorld San Diego',
         lat: 32.764720,
         lng: -117.225249,
         id: '40e0b100f964a5209c011fe3'
     },
     {
-        Title: 'Ocean Beach',
+        Title: 'Ocean Beach Dog Beach',
         lat: 32.754438,
         lng: -117.252425,
         id: '40e0b100f964a5209c011fe3'
     },
     {
-        Title: 'Zoo',
-        lat: 32.733153,
-        lng: -117.149112,
+        Title: 'San Diego Zoo',
+        lat: 32.732901,
+        lng: -117.1476879,
         id: '40e0b100f964a5209c011fe3'
     },
     {
-        Title: 'Airport',
-        lat: 32.731653,
-        lng: -117.196596,
+        Title: 'San Diego International Airport',
+        lat: 32.7327628,
+        lng: -117.1952763,
         id: '40e0b100f964a5209c011fe3'
     }
 ];
@@ -202,7 +202,7 @@ function populateInfoWindow(marker) {
         largeInfowindow.marker = marker;
         // Make sure the marker property is cleared if the infowindow is closed.
         largeInfowindow.addListener('closeclick', function () {
-            infowindow.marker = null;
+            largeInfowindow.marker = null;
         });
         var streetViewService = new google.maps.StreetViewService();
         var radius = 50;
@@ -414,15 +414,16 @@ function Square(data) {
     if (records.outdoors) category.push('outdoors');
 
     $.getJSON(SquareUrl, function (result) {
+        //var address = result.response.venues[0].location.address;
         console.log(result.response.venues[0].location.address)
         return result.response.venues[0].location.address;
 
         var help = [];
         //filter if statement
-        for (var el in items) {
+        /*for (var el in items) {
             var place = parseVenue(items[el]);
             help.push(place);
-        }
+        }*/
 
         state = 'loaded';
         venues = help;
