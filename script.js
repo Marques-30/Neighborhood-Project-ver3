@@ -257,21 +257,28 @@ var Location = function (data) {
     this.lat = data.lat;
     this.lng = data.lng;
     this.id = data.id;
-    this.street = Square(this);
-    this.city = "San Diego, CA";
-    this.URL = "";
+    this.city = ko.observable("");
+    this.url = ko.observable("");
+    this.street = ko.observable("");
+    this.address = ko.observable("");
+    this.phone = ko.observable("");
+
+    Square(this);
 
     this.visible = ko.observable(true);
 
-    // attach content string to the marker object
-    this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
-        '<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
-        '<div class="content">' + self.street + "</div>" +
-        '<div class="content">' + self.city + "</div>" +
-        '<div class="content">' + 'populateInfoWindow()' + "</div>";
+    this.infoWindow = new google.maps.InfoWindow();
 
-    this.infoWindow = new google.maps.InfoWindow({
-        content: self.contentString
+    // ko computed observables watch other observables and update when the dependencies change
+    this.makeInfoWindowContent = ko.computed(function() {
+        // attach content string to the marker object
+        const contentString = '<div class="info-window-content"><div class="title"><b><a href="' + self.url() + '">' + data.Title + "</a></b></div>" +
+        '<div class="content">' + self.street() + "</div>" +
+        '<div class="content">' + self.city() + "</div>" +
+        '<div class="content">' + self.address() + "</div>" +
+        '<div class="content">' + self.phone() + "</div>";
+
+        self.infoWindow.setContent(contentString);
     });
 
     this.marker = new google.maps.Marker({
@@ -291,14 +298,8 @@ var Location = function (data) {
 
     this.marker.addListener('click', function () {
 
-        // Attach content string to the marker object
-        this.contentString = '<div class="info-window-content"><div class="title"><b>' + data.Title + "</b></div>" +
-            '<div class="content"><a href="' + self.URL + '">' + self.URL + "</a></div>" +
-            '<div class="content">' + self.street + "</div>" +
-            '<div class="content">' + self.city + "</div>"; //+        '<div class="content">' + 'populateInfoWindow()' + "</div>";
-            console.log(this.contentString)
-        // Pass the marker as an argument to the populateInfoWindow function
-        populateInfoWindow(this);
+        self.infoWindow.open(map, this);
+      
 
         //self.infoWindow.setContent(self.contentString);
 
@@ -412,11 +413,22 @@ function Square(data) {
     if (records.food) category.push('food');
     if (records.shops) category.push('shops');
     if (records.outdoors) category.push('outdoors');
-
     $.getJSON(SquareUrl, function (result) {
+
         //var address = result.response.venues[0].location.address;
-        console.log(result.response.venues[0].location.address)
-        return result.response.venues[0].location.address;
+      //  console.log(result.response.venues[0].location.address)
+      console.log(result.response.venues[0]);
+      const address = result.response.venues[0].location.formattedAddress[0];
+      const url = result.response.venues[0].url;
+      const city = result.response.venues[0].location.city;
+      const phone = result.response.venues[0].contact.formattedPhone;
+      // write data to observables
+      data.address(address);
+      data.url(url);
+      data.city(city);
+      data.phone(phone);
+
+        //return result.response.venues[0].location.address;
 
         var help = [];
         //filter if statement
@@ -425,12 +437,13 @@ function Square(data) {
             help.push(place);
         }*/
 
-        state = 'loaded';
-        venues = help;
+     //   state = 'loaded';
+      //  venues = help;
     }, function (data, status) {
         state = 'noResult';
+        errorMessage();
     });
-    return false;
+   // return false;
 }
 /*function(yelpload){
 const yelp = require('yelp-fusion');
